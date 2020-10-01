@@ -94,3 +94,87 @@ function main(params) {
   });
 }
 ```
+
+### Asynchronous Actions
+
+```js
+function main(args) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve({ done: true });
+    }, 2000);
+  });
+}
+```
+
+Actions have a timeout parameter that enforces the maximum duration for an invocation. This value defaults to 60 seconds and can be changed to a maximum of 5 minutes.
+
+```bash
+# Increase the default timeout for an action.
+ibmcloud fn action update actionName --timeout 1000
+```
+
+## Packages
+
+Packages can bundle together related actions and also share them with the community.
+
+- Packages can only contain actions. Triggers and rules are not supported at the moment.
+- Packages support default parameters.
+- Package nesting is not allowed.
+
+### IBM Public Packages
+
+```bash
+# List system packages
+ibmcloud fn package list /whisk.system
+/whisk.system/combinators
+/whisk.system/websocket
+/whisk.system/watson-translator
+/whisk.system/watson-textToSpeech
+/whisk.system/github
+/whisk.system/utils
+/whisk.system/watson-speechToText
+/whisk.system/slack
+/whisk.system/samples
+/whisk.system/weather
+/whisk.system/pushnotifications
+/whisk.system/alarms
+/whisk.system/cloudant
+/whisk.system/messaging
+
+# Get a description of the package binding.
+ibmcloud fn package get --summary /whisk.system/cloudant
+package /whisk.system/cloudant: Cloudant database service
+   (parameters: *apihost, *bluemixServiceName, *dbname, *host, overwrite, *password, *username)
+ action /whisk.system/cloudant/read: Read document from database
+   (parameters: dbname, id, params)
+  action /whisk.system/cloudant/write: Write document in database
+   (parameters: dbname, doc)
+   ....
+```
+
+Parameters listed under the package with a prefix _ are predefined, bound parameters. Parameters without a _ are those listed under the annotations for each entity. Furthermore, any parameters with the prefix \*\* are finalized bound parameters. This means that they are immutable, and cannot be changed by the user.
+
+### Creating and Using Package Bindings
+
+Although you can use the entities in a package directly, you might find yourself passing the same parameters to the action every time. You can avoid this by binding to a package and specifying default parameters. These parameters are inherited by the actions in the package.
+
+```bash
+# Bind the samples packages.
+ibmcloud fn package bind /whisk.system/samples myPackage
+# Invoke an action in the package binding.
+ibmcloud fn action invoke --result myPackage/greeting --param name Jim
+```
+
+### Creating Packages
+
+```bash
+# Create a package.
+ibmcloud fn package create custom
+# Get the summary of the package.
+ibmcloud fn package get --summary custom
+# Use the package name as a namespace. Example:
+ibmcloud fn action create custom/getWeather getWeather.js
+# Share the package.
+ibmcloud fn package update custom --shared yes
+```
