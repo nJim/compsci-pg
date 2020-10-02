@@ -178,3 +178,101 @@ ibmcloud fn action create custom/getWeather getWeather.js
 # Share the package.
 ibmcloud fn package update custom --shared yes
 ```
+
+## Triggers and Rules
+
+_Not enough time to include this in practice group._
+
+## Web UI
+
+[Login to the Cloud Console](https://cloud.ibm.com/login) to find a list of all IBM Cloud resources associated with your account. This includes an interface for all 'Functions' including actions, triggers, and APIs.
+
+- Functions can be invoked from the Web UI.
+- Simply cloud functions can be edited in a text editor.
+- Sequences, Triggers, and API settings may be managed.
+
+## Exposing APIs from Actions
+
+Web actions can then be invoked through the public platform API using a HTTP request without user authentication.
+
+- HTTP request parameters are automatically converted in event parameters.
+- Values returned from the action are automatically serialised to a JSON response.
+- An optional API Gateway handles capabilities like routing based on request properties (URI paths and HTTP method), user authentication, rate limiting and more
+
+```bash
+# The web action is enabled with a parameter.
+ibmcloud fn action update actionName --web true
+# Get the endpoint for a function.
+ibmcloud fn action get actionName --url
+```
+
+The function can be invoked by sending request parameters as the actions params.
+
+```bash
+curl "https://...whatever-endpoint.../convertCtoF.json?temp=23"
+{
+  "temp": 73.4
+}
+```
+
+### Content Extensions
+
+Web actions invoked through the platform API need a content extension to tell the platform how to interpret the content returned from the action.
+
+The platform supports the following content-types: .json, .html, .http, .svg or .text. If no content extension is provided, it defaults to .http which gives the action full control of the HTTP response.
+
+```javascript
+// HTTP Extensions example for creating a redirect.
+function main() {
+  return {
+    headers: { location: "http://www.windows93.net/" },
+    statusCode: 302,
+  };
+}
+```
+
+```bash
+# Get the endpoint for http action.
+ibmcloud fn action get redirect --url
+```
+
+```javascript
+// HTML Extensions example delivering markup.
+function main() {
+  let html = "<html><body>Hello World!</body></html>";
+  return {
+    headers: { "Content-Type": "text/html" },
+    statusCode: 200,
+    body: html,
+  };
+}
+```
+
+```bash
+# Get the endpoint for html action.
+ibmcloud wsk action get html --url
+```
+
+```javascript
+// JPEG  Extensions example encoded images.
+function main() {
+  let png = "<BASE64 ENCODED IMAGE STRING>";
+  return {
+    headers: { "Content-Type": "image/png" },
+    statusCode: 200,
+    body: png,
+  };
+}
+```
+
+```bash
+ibmcloud fn action get image --url
+```
+
+### API Gateway
+
+_There's a lot you can do on the command line; but checking out the web interface is a better place to get started._
+
+## Serverless Framework
+
+_Show example_
