@@ -275,4 +275,10 @@ _There's a lot you can do on the command line; but checking out the web interfac
 
 ## Serverless Framework
 
-_Show example_
+See:
+https://www.serverless.com/framework/docs/providers/openwhisk/guide/functions/
+
+## Tutorials
+
+- https://developer.ibm.com/components/ibm-cloud-functions/tutorials/
+- https://cloud.ibm.com/docs/solution-tutorials
